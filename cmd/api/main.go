@@ -22,14 +22,17 @@ func main() {
 			addr:         env.GetString("DB_ADDR", consts.DEFAULT_DB_ADDR),
 			maxOpenConns: env.GetInt("DB_MAX_OPEN_CONNS", 10),
 			maxIdelConn:  env.GetInt("DB_MAX_IDLE_CONNS", 5),
-			maxIdleTime:  env.GetString("DB_MAX_IDLE_TIMEOUT", "30min"),
+			maxIdleTime:  env.GetString("DB_MAX_IDLE_TIMEOUT", "15m"),
 		},
 	}
-	db, err := db.New(cfg.addr, cfg.db.maxOpenConns, cfg.db.maxIdelConn, cfg.db.maxIdleTime)
+	db, err := db.New(cfg.db.addr, cfg.db.maxOpenConns, cfg.db.maxIdelConn, cfg.db.maxIdleTime)
 
 	if err != nil {
 		log.Panic("DB connection failed", err)
 	}
+
+	defer db.Close()
+	log.Println("DB connected.")
 
 	store := store.NewStorage(db)
 
